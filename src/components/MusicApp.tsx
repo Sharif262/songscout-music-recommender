@@ -36,8 +36,8 @@ export default function ModernMusicApp() {
     try {
       const response = await fetch(`/api/users/${MOCK_USER_ID}/liked`)
       const data = await response.json()
-      setLikedSongs(data.map((like: any) => like.songId))
-      setLikedSongsDetails(data.map((like: any) => like.song))
+      setLikedSongs(data.map((like) => like.songId))
+      setLikedSongsDetails(data.map((like) => like.song))
     } catch (error) {
       console.error('Failed to fetch liked songs:', error)
     }

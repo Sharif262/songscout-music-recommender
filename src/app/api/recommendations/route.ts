@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's favorite genres with proper typing
-    const likedGenres: string[] = userLikes.map((like: any) => like.song.genre)
+    const likedGenres: string[] = userLikes.map((like) => like.song.genre)
     const genreCounts: Record<string, number> = {}
     
     likedGenres.forEach((genre: string) => {
@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
     )
 
     // Get liked song IDs to exclude with proper typing
-    const likedSongIds: number[] = userLikes.map((like: any) => like.songId)
+    const likedSongIds: number[] = userLikes.map((like) => like.songId)
+
 
     // Recommend songs from favorite genre user hasn't liked
     const recommendations = await prisma.song.findMany({
