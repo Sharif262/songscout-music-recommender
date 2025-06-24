@@ -87,28 +87,15 @@ export default function ModernMusicApp() {
     }
   }
 
-  const handleSongLike = (songId: number) => {
-    if (likedSongs.includes(songId)) {
-      setLikedSongs(prev => prev.filter(id => id !== songId))
-      setLikedSongsDetails(prev => prev.filter(song => song.id !== songId))
-    } else {
-      setLikedSongs(prev => [...prev, songId])
-      fetchLikedSongs()
-    }
-  }
-
-  const handleUnlike = async (songId: number) => {
-    try {
-      await fetch(`/api/songs/${songId}/like`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: MOCK_USER_ID })
-      })
-      handleSongLike(songId)
-    } catch (error) {
-      console.error('Unlike error:', error)
-    }
-  }
+  const handleSongLike = async (songId: number) => {
+    const method = likedSongs.includes(songId) ? "DELETE" : "POST";
+    await fetch(`/api/songs/${songId}/like`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: MOCK_USER_ID }),
+    });
+    fetchLikedSongs(); // Always refresh after like/unlike
+  };
 
   const getGenreColor = (genre: string) => {
     const colors = {
@@ -355,7 +342,7 @@ export default function ModernMusicApp() {
                           {song.genre}
                         </span>
                         <button
-                          onClick={() => handleUnlike(song.id)}
+                          onClick={() => handleSongLike(song.id)}
                           className="px-8 py-4 bg-gradient-to-r from-pink-500 to-red-500 text-white hover:from-red-500 hover:to-pink-500 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg group"
                         >
                           <Heart className="inline w-5 h-5 mr-2 fill-current group-hover:animate-pulse" />
