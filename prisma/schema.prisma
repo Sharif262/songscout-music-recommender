@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  
+  // Relationships
+  likes     SongLike[]
+  searches  SearchHistory[]
+}
+
+model Song {
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String
+  album     String?
+  genre     String   // "Rock", "Pop", "Hip-Hop", "Jazz", etc.
+  year      Int?     // Release year
+  popularity Int     @default(50) // 1-100 scale (manual rating)
+  createdAt DateTime @default(now())
+  
+  // User interactions
+  likes     SongLike[]
+}
+
+model SongLike {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  songId Int
+  user   User @relation(fields: [userId], references: [id])
+  song   Song @relation(fields: [songId], references: [id])
+  likedAt DateTime @default(now())
+  
+  @@unique([userId, songId]) // User can only like a song once
+}
+
+model SearchHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  query     String
+  user      User     @relation(fields: [userId], references: [id])
+  searchedAt DateTime @default(now())
+}
