@@ -35,11 +35,27 @@ export default function ModernMusicApp() {
   const fetchLikedSongs = async () => {
     try {
       const response = await fetch(`/api/users/${MOCK_USER_ID}/liked`)
+      
+      if (!response.ok) {
+        console.log('API returned error:', response.status)
+        return // Exit early if API fails
+      }
+      
       const data = await response.json()
-      setLikedSongs(data.map((like) => like.songId))
-      setLikedSongsDetails(data.map((like) => like.song))
+      
+      // Ensure data is an array before mapping
+      if (Array.isArray(data)) {
+        setLikedSongs(data.map((like) => like.songId))
+        setLikedSongsDetails(data.map((like) => like.song))
+      } else {
+        console.log('API returned non-array:', data)
+        setLikedSongs([])
+        setLikedSongsDetails([])
+      }
     } catch (error) {
       console.error('Failed to fetch liked songs:', error)
+      setLikedSongs([])     // Set empty arrays as fallback
+      setLikedSongsDetails([])
     }
   }
 
@@ -47,10 +63,25 @@ export default function ModernMusicApp() {
     setLoading(true)
     try {
       const response = await fetch(`/api/recommendations?userId=${MOCK_USER_ID}`)
+      
+      if (!response.ok) {
+        console.log('Recommendations API error:', response.status)
+        setRecommendations([])
+        return
+      }
+      
       const songs = await response.json()
-      setRecommendations(songs)
+      
+      // Ensure songs is an array
+      if (Array.isArray(songs)) {
+        setRecommendations(songs)
+      } else {
+        console.log('Recommendations returned non-array:', songs)
+        setRecommendations([])
+      }
     } catch (error) {
       console.error('Failed to fetch recommendations:', error)
+      setRecommendations([])
     } finally {
       setLoading(false)
     }
